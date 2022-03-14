@@ -347,7 +347,7 @@ class ReopenCaseSerializer(SendEventSerializerMixin, ContextModelSerializer):
 
     def validate(self, data):
         domain_logic.ReopenCaseLogic.validate_for_reopen(
-            self.instance, data["work_items"]
+            self.instance, self.instance.work_items.filter(pk__in=data["work_items"])
         )
 
         return super().validate(data)
@@ -356,11 +356,13 @@ class ReopenCaseSerializer(SendEventSerializerMixin, ContextModelSerializer):
     def update(self, case, validated_data):
         user = self.context["request"].user
 
-        domain_logic.ReopenCaseLogic.pre_reopen(case, validated_data["work_items"], user, self.context)
+        work_items = case.work_items.filter(pk__in=validated_data["work_items"])
 
-        domain_logic.ReopenCaseLogic.do_reopen(case, validated_data["work_items"])
+        domain_logic.ReopenCaseLogic.pre_reopen(case, work_items, user, self.context)
 
-        domain_logic.ReopenCaseLogic.post_reopen(case, validated_data["work_items"], user, self.context)
+        domain_logic.ReopenCaseLogic.do_reopen(case, work_items)
+
+        domain_logic.ReopenCaseLogic.post_reopen(case, work_items, user, self.context)
 
         return case
 

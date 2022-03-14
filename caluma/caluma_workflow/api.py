@@ -234,13 +234,6 @@ def reopen_case(
     )
 
     domain_logic.ReopenCaseLogic.do_reopen(case, work_items)
-    # case.status = models.Case.STATUS_RUNNING
-    # case.save()    
-
-    # # ! Child cases?
-    # for work_item in work_items:
-    #     work_item.status = models.WorkItem.STATUS_READY
-    #     work_item.save()
 
     domain_logic.ReopenCaseLogic.post_reopen(case, work_items, user, context)
 

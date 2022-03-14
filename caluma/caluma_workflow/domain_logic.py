@@ -378,8 +378,8 @@ class ReopenCaseLogic:
         ]:
             raise ValidationError("Only completed and canceled cases can be reopened.")
 
-        if case.parent_work_item:
-            raise ValidationError("Child cases can not be reopened.") # ????
+        if not case.family == case:
+            raise ValidationError("Child cases can not be reopened.")
 
         for work_item in work_items:
             if work_item.succeeding_work_items.exists():
