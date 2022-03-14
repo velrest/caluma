@@ -311,14 +311,14 @@ class ReopenCase(Mutation):
     class Input:
         id = graphene.ID()
         work_items = graphene.List(
-            graphene.ID, # ! check if that needs to be instantiated
+            graphene.ID,
             required=True,
             description="List of work item ids to be readied when the case is reopened",
         )
 
     class Meta:
         serializer_class = serializers.ReopenCaseSerializer
-        fields: ["id", "work_items"]
+        fields: ["id"]
         model_operations = ["update"]
 
 

@@ -14,6 +14,7 @@ def reopen_case_setup(case_status, work_item_statuses, case_factory, work_item_f
 
     return case, work_items
 
+
 @pytest.mark.parametrize("use_graphql", [False, True])
 def test_allow_completed_cases_to_be_reopened(
     db, admin_user, case_factory, work_item_factory, schema_executor, use_graphql
@@ -84,6 +85,7 @@ def test_reject_suspended_cases_during_reopen(
     with pytest.raises(ValidationError):
         api.reopen_case(suspended_case, work_items, admin_user)
 
+
 def test_require_at_least_1_work_item_during_case_reopening(
     db, admin_user, schema_executor, case_factory, work_item_factory
 ):
@@ -110,12 +112,17 @@ def test_require_at_least_1_work_item_during_case_reopening(
     result = schema_executor(query, variable_values=inp)
     assert result.errors
 
+
 def test_only_supplied_work_items_readied(
     db, admin_user, schema_executor, case_factory, work_item_factory
 ):
     case, work_items = reopen_case_setup(
         models.Case.STATUS_COMPLETED,
-        [models.WorkItem.STATUS_COMPLETED, models.WorkItem.STATUS_SKIPPED, models.WorkItem.STATUS_CANCELED],
+        [
+            models.WorkItem.STATUS_COMPLETED,
+            models.WorkItem.STATUS_SKIPPED,
+            models.WorkItem.STATUS_CANCELED,
+        ],
         case_factory,
         work_item_factory,
     )
@@ -128,12 +135,17 @@ def test_only_supplied_work_items_readied(
     assert work_items[1].status == models.WorkItem.STATUS_SKIPPED
     assert work_items[2].status == models.WorkItem.STATUS_CANCELED
 
+
 def test_work_items_not_lost(
     db, admin_user, schema_executor, case_factory, work_item_factory
 ):
     case, work_items = reopen_case_setup(
         models.Case.STATUS_COMPLETED,
-        [models.WorkItem.STATUS_COMPLETED, models.WorkItem.STATUS_SKIPPED, models.WorkItem.STATUS_CANCELED],
+        [
+            models.WorkItem.STATUS_COMPLETED,
+            models.WorkItem.STATUS_SKIPPED,
+            models.WorkItem.STATUS_CANCELED,
+        ],
         case_factory,
         work_item_factory,
     )
@@ -146,11 +158,18 @@ def test_work_items_not_lost(
     assert work_items[1] in case.work_items.all()
     assert work_items[2] in case.work_items.all()
 
-def test_only_cases_without_parent_case(db, case_factory, work_item_factory, admin_user):
+
+def test_only_cases_without_parent_case(
+    db, case_factory, work_item_factory, admin_user
+):
     parent_case = case_factory()
     child_case, work_items = reopen_case_setup(
         models.Case.STATUS_COMPLETED,
-        [models.WorkItem.STATUS_COMPLETED, models.WorkItem.STATUS_SKIPPED, models.WorkItem.STATUS_CANCELED],
+        [
+            models.WorkItem.STATUS_COMPLETED,
+            models.WorkItem.STATUS_SKIPPED,
+            models.WorkItem.STATUS_CANCELED,
+        ],
         case_factory,
         work_item_factory,
     )
@@ -161,7 +180,10 @@ def test_only_cases_without_parent_case(db, case_factory, work_item_factory, adm
     with pytest.raises(ValidationError):
         api.reopen_case(child_case, work_items, admin_user)
 
-def test_only_work_items_at_end_of_branch(db, case_factory, work_item_factory, admin_user):
+
+def test_only_work_items_at_end_of_branch(
+    db, case_factory, work_item_factory, admin_user
+):
     case, work_items = reopen_case_setup(
         models.Case.STATUS_COMPLETED,
         [models.WorkItem.STATUS_COMPLETED],
@@ -170,12 +192,15 @@ def test_only_work_items_at_end_of_branch(db, case_factory, work_item_factory, a
     )
 
     # add a work item after the one returned by the reopen_case_setup
-    succeeding_work_item = work_item_factory(previous_work_item=work_items[0])
+    work_item_factory(previous_work_item=work_items[0])
 
     with pytest.raises(ValidationError):
         api.reopen_case(case, work_items, admin_user)
 
-def test_only_work_items_belonging_to_case(db, case_factory, work_item_factory, admin_user):
+
+def test_only_work_items_belonging_to_case(
+    db, case_factory, work_item_factory, admin_user
+):
     case, work_items = reopen_case_setup(
         models.Case.STATUS_COMPLETED,
         [models.WorkItem.STATUS_COMPLETED],
@@ -187,6 +212,7 @@ def test_only_work_items_belonging_to_case(db, case_factory, work_item_factory, 
 
     with pytest.raises(ValidationError):
         api.reopen_case(case, [other_case_work_item], admin_user)
+
 
 # todo: run pytest -n0 --snapshot-update --cov
 # todo: pytest -k schema -n0

@@ -2,7 +2,6 @@ import json
 
 import pytest
 from django.core.exceptions import ValidationError
-from graphene_django.utils.str_converters import to_const
 from graphql_relay import to_global_id
 
 from ...caluma_core.relay import extract_global_id

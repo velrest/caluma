@@ -374,7 +374,7 @@ class ReopenCaseLogic:
     def validate_for_reopen(case, work_items):
         if case.status not in [
             models.Case.STATUS_COMPLETED,
-            models.Case.STATUS_CANCELED
+            models.Case.STATUS_CANCELED,
         ]:
             raise ValidationError("Only completed and canceled cases can be reopened.")
 
@@ -417,7 +417,7 @@ class ReopenCaseLogic:
     @staticmethod
     def do_reopen(case, work_items):
         case.status = models.Case.STATUS_RUNNING
-        case.save()    
+        case.save()
 
         for work_item in work_items:
             work_item.status = models.WorkItem.STATUS_READY
