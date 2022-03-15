@@ -212,7 +212,3 @@ def test_only_work_items_belonging_to_case(
 
     with pytest.raises(ValidationError):
         api.reopen_case(case, [other_case_work_item], admin_user)
-
-
-# todo: run pytest -n0 --snapshot-update --cov
-# todo: pytest -k schema -n0

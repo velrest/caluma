@@ -212,7 +212,7 @@ def resume_case(
 
 def reopen_case(
     case: models.Case,
-    work_items: List[models.WorkItem],  # ! check this
+    work_items: List[models.WorkItem],
     user: BaseUser,
     context: Optional[dict] = None,
 ) -> models.Case:
